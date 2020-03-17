@@ -33,6 +33,7 @@ public class DetermineApplication : MonoBehaviour
         {
             return;
         }
+        activeApplication = activeApplication.ToLower();
         if(currentApplication != null)
         {
             if (activeApplication.Contains(currentApplication))

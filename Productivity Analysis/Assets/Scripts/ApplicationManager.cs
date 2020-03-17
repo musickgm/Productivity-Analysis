@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class ApplicationManager : MonoBehaviour
+public class ApplicationManager : Singleton<ApplicationManager>
 {
     //timeline of applications
     public List<App> usedApplications = new List<App>();
@@ -14,19 +14,27 @@ public class ApplicationManager : MonoBehaviour
 
     public void SetApplication(string appName)
     {
+        App newApp = ApplicationFromStandardList(appName);
+        if(newApp == currentApplication)
+        {
+            return;
+        }
+
         //deactivate previous application
-        if (currentApplication != null)
+        if (currentApplication != null && currentApplication.active)
         {
             currentApplication.Deactivate();
         }
         currentApplication = null;
 
-        currentApplication = ApplicationFromUsedList(appName);
+        currentApplication = newApp;
+
+
         if(currentApplication == null)
         {
-            currentApplication = ApplicationFromStandardList(appName);
+            currentApplication = ApplicationFromUsedList(appName);
         }
-        if(currentApplication ==  null)
+        if (currentApplication ==  null)
         {
             currentApplication = MakeNewApp(appName);
         }
@@ -39,7 +47,7 @@ public class ApplicationManager : MonoBehaviour
     {
         for (int i = 0; i < usedApplications.Count; i++)
         {
-            if (_appName.Contains(usedApplications[i].appName))
+            if (_appName.Contains(usedApplications[i].searchKey))
             {
                 return usedApplications[i];
 
@@ -53,7 +61,7 @@ public class ApplicationManager : MonoBehaviour
     {
         for (int i = 0; i < standardApplications.Count; i++)
         {
-            if (_appName.Contains(standardApplications[i].appName))
+            if (_appName.Contains(standardApplications[i].searchKey))
             {
                 usedApplications.Add(standardApplications[i]);
                 return standardApplications[i];
@@ -66,11 +74,25 @@ public class ApplicationManager : MonoBehaviour
     {
         App newApplication = gameObject.AddComponent<App>();
         newApplication.appName = _appName;
+        newApplication.searchKey = _appName;
         usedApplications.Add(newApplication);
         print(_appName);
 
         return newApplication;
     }
 
+
+    public void EndCurrentApplication()
+    {
+        if(currentApplication != null && currentApplication.active)
+        {
+            currentApplication.Deactivate();
+        }
+    }
+
+    public float CurrentApplicationRuntime()
+    {
+        return currentApplication.sectionActive;
+    }
 
 }

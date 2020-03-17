@@ -63,12 +63,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\AnalyticsApp.cs" />
     <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
     <Compile Include="Assets\Scripts\App.cs" />
     <Compile Include="Assets\Scripts\ApplicationManager.cs" />
     <Compile Include="Assets\Scripts\DetermineApplication.cs" />
     <Compile Include="Assets\Scripts\MouseInput.cs" />
+    <Compile Include="Assets\Scripts\Page.cs" />
+    <Compile Include="Assets\Scripts\PageManager.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
+    <Compile Include="Assets\Scripts\TimelineUISection.cs" />
     <Compile Include="Assets\UnityRawInput\Runtime\HookType.cs" />
     <Compile Include="Assets\UnityRawInput\Runtime\KbDllHookStruct.cs" />
     <Compile Include="Assets\UnityRawInput\Runtime\RawKey.cs" />

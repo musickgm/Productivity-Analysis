@@ -5,7 +5,7 @@ using UnityRawInput;
 
 
 
-public enum ApplicationType { work, browsing, leisure, inputBased};
+public enum ApplicationType { work, browsing, leisure, misc};
 
 [System.Serializable]
 public struct TimeTypes
@@ -13,13 +13,14 @@ public struct TimeTypes
     public float work;
     public float browse;
     public float leisure;
-
+    public float misc;
 }
 
 
 public class App : MonoBehaviour
 {
     public string appName;
+    public string searchKey;
     public bool active = false;
     public Color appColor;
     public ApplicationType appType;
@@ -28,19 +29,24 @@ public class App : MonoBehaviour
     public float browsingThreshold = 30;
 
     public float secondsActive = 0;
-    //public int mouseClicks = 0;
+    public float sectionActive = 0;
     public int keyboardClicks = 0;
+    public int spaceHits = 0;
+    public int enterHits = 0;
     public float mouseMovementTime = 0;
-    //public float mouseScrollTime = 0;
     //Specific time designations
     public TimeTypes timeTypes;
 
     private float mostRecentKeystroke;
     private IEnumerator InputCoroutine;
+    private TimelineSection timelineSection;
 
     private void Start()
     {
         RawKeyInput.Start(true);
+        timelineSection.color = appColor;
+        timelineSection.appName = appName;
+        timelineSection.appType = appType;
     }
 
 
@@ -49,6 +55,8 @@ public class App : MonoBehaviour
     public void Activate()
     {
         active = true;
+        sectionActive = 0;
+        timelineSection.startTime = System.DateTime.Now.ToString("hh:mm:ss");
         RawKeyInput.OnKeyDown += TrackKeyInput;
         InputCoroutine = DetermineInput();
 
@@ -58,6 +66,10 @@ public class App : MonoBehaviour
     public void Deactivate()
     {
         active = false;
+        timelineSection.endTime = System.DateTime.Now.ToString("hh:mm:ss");
+        timelineSection.secLength = sectionActive;
+        AnalyticsManager.Instance.AddTimelineSection(timelineSection);
+
         RawKeyInput.OnKeyDown -= TrackKeyInput;
 
         if (InputCoroutine != null)
@@ -90,6 +102,15 @@ public class App : MonoBehaviour
     private void TrackKeyInput(RawKey key)
     {
         keyboardClicks += 1;
+        if(key == RawKey.Return)
+        {
+            enterHits++;
+        }
+        else if(key == RawKey.Space)
+        {
+            spaceHits++;
+        }
+
         mostRecentKeystroke = Time.time;
     }
 
@@ -167,6 +188,7 @@ public class App : MonoBehaviour
                 timeTypes.work += elapsedTime;
             }
             secondsActive += elapsedTime;
+            sectionActive += elapsedTime;
 
             yield return new WaitForEndOfFrame();
         }
