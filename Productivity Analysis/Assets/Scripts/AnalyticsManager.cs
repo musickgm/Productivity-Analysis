@@ -129,6 +129,13 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
             appTimeInput.browse += app.timeTypes.browse;
             appTimeInput.leisure += app.timeTypes.leisure;
         }
+        for (int i = 0; i < ApplicationManager.Instance.standardApplications.Count; i++)
+        {
+            App app = ApplicationManager.Instance.standardApplications[i];
+            appTimeInput.work += app.timeTypes.work;
+            appTimeInput.browse += app.timeTypes.browse;
+            appTimeInput.leisure += app.timeTypes.leisure;
+        }
 
         float workFraction = appTimeInput.work / totalTime;
         float browseFraction = appTimeInput.browse / totalTime;
@@ -158,6 +165,29 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
             float appTime = ApplicationManager.Instance.usedApplications[i].secondsActive;
             ApplicationType type= ApplicationManager.Instance.usedApplications[i].appType;
             switch(type)
+            {
+                case ApplicationType.work:
+                    appTimeType.work += appTime;
+                    break;
+                case ApplicationType.browsing:
+                    appTimeType.browse += appTime;
+                    break;
+                case ApplicationType.leisure:
+                    appTimeType.leisure += appTime;
+                    break;
+                case ApplicationType.misc:
+                    appTimeType.misc += appTime;
+                    break;
+                default:
+                    appTimeType.misc += appTime;
+                    break;
+            }
+        }
+        for (int i = 0; i < ApplicationManager.Instance.standardApplications.Count; i++)
+        {
+            float appTime = ApplicationManager.Instance.standardApplications[i].secondsActive;
+            ApplicationType type = ApplicationManager.Instance.standardApplications[i].appType;
+            switch (type)
             {
                 case ApplicationType.work:
                     appTimeType.work += appTime;

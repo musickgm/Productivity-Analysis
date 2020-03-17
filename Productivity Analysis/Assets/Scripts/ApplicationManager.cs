@@ -75,6 +75,8 @@ public class ApplicationManager : Singleton<ApplicationManager>
         App newApplication = gameObject.AddComponent<App>();
         newApplication.appName = _appName;
         newApplication.searchKey = _appName;
+        newApplication.appType = ApplicationType.misc;
+        newApplication.appColor = AnalyticsManager.Instance.activityColors[3];
         usedApplications.Add(newApplication);
         print(_appName);
 

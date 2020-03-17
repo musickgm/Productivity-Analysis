@@ -10,6 +10,7 @@ public class PageManager : MonoBehaviour
 
     private void Awake()
     {
+        Screen.fullScreen = false;
         SetNewPage(defaultPage);
     }
 
