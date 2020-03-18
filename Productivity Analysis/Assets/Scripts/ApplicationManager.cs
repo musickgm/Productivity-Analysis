@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/// <summary>
+/// Holds all the apps
+/// </summary>
 public class ApplicationManager : Singleton<ApplicationManager>
 {
-    //timeline of applications
-    public List<App> usedApplications = new List<App>();
-    public List<App> standardApplications = new List<App>();
+    public List<App> usedApplications = new List<App>();                //List of "new" apps that have been used
+    public List<App> standardApplications = new List<App>();            //Predefined list of standard app likely to be used
 
-    private App currentApplication;
+    private App currentApplication;                                     //The current app being used
+        
 
-
+    /// <summary>
+    /// Called by "Determine Application" - sets the current app and makes new apps if necessary
+    /// </summary>
+    /// <param name="appName"></param>
     public void SetApplication(string appName)
     {
         App newApp = ApplicationFromStandardList(appName);
@@ -43,6 +49,11 @@ public class ApplicationManager : Singleton<ApplicationManager>
         currentApplication.Activate();
     }
 
+    /// <summary>
+    /// Checks to see if the app has already been used
+    /// </summary>
+    /// <param name="_appName"></param>
+    /// <returns></returns>
     private App ApplicationFromUsedList(string _appName)
     {
         for (int i = 0; i < usedApplications.Count; i++)
@@ -57,19 +68,28 @@ public class ApplicationManager : Singleton<ApplicationManager>
         return null;
     }
 
+    /// <summary>
+    /// Checks to see if the app is in the standard list
+    /// </summary>
+    /// <param name="_appName"></param>
+    /// <returns></returns>
     private App ApplicationFromStandardList(string _appName)
     {
         for (int i = 0; i < standardApplications.Count; i++)
         {
             if (_appName.Contains(standardApplications[i].searchKey))
             {
-                usedApplications.Add(standardApplications[i]);
                 return standardApplications[i];
             }
         }
         return null;
     }
 
+    /// <summary>
+    /// If the app hasn't been used and not in the standard list, make a new app
+    /// </summary>
+    /// <param name="_appName"></param>
+    /// <returns></returns>
     private App MakeNewApp(string _appName)
     {
         App newApplication = gameObject.AddComponent<App>();
@@ -84,6 +104,9 @@ public class ApplicationManager : Singleton<ApplicationManager>
     }
 
 
+    /// <summary>
+    /// End current application
+    /// </summary>
     public void EndCurrentApplication()
     {
         if(currentApplication != null && currentApplication.active)
@@ -92,6 +115,10 @@ public class ApplicationManager : Singleton<ApplicationManager>
         }
     }
 
+    /// <summary>
+    /// Returns how long the current application has been running. 
+    /// </summary>
+    /// <returns></returns>
     public float CurrentApplicationRuntime()
     {
         return currentApplication.sectionActive;

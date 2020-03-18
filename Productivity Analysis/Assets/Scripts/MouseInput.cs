@@ -4,12 +4,18 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Windows;
 
+/// <summary>
+/// Mouse data x,y
+/// </summary>
 public struct Point
 {
     public int x;
     public int y;
 }
 
+/// <summary>
+/// Tracks mouse position even outside of unity
+/// </summary>
 public class MouseInput : Singleton<MouseInput>
 {
     [DllImport("user32.dll")]

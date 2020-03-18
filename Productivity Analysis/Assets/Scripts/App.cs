@@ -4,9 +4,14 @@ using UnityEngine;
 using UnityRawInput;
 
 
-
+/// <summary>
+/// Enum for application type
+/// </summary>
 public enum ApplicationType { work, browsing, leisure, misc};
 
+/// <summary>
+/// Struct for types of time
+/// </summary>
 [System.Serializable]
 public struct TimeTypes
 {
@@ -16,17 +21,19 @@ public struct TimeTypes
     public float misc;
 }
 
-
+/// <summary>
+/// Class for handling each app's data (both predefined and made during use)
+/// </summary>
 public class App : MonoBehaviour
 {
-    public string appName;
-    public string searchKey;
-    public bool active = false;
-    public Color appColor;
-    public ApplicationType appType;
+    public string appName;                              //Name of app
+    public string searchKey;                            //String to be searched for (lowercase)
+    public bool active = false;                         //Currently being used?
+    public Color appColor;                              //App color
+    public ApplicationType appType;                     //App type
 
-    public float idleThreshold = 30;
-    public float browsingThreshold = 30;
+    public float idleThreshold = 30;                    //How long before considered idle for this app?
+    public float browsingThreshold = 30;                //How long without keyboard input to be considered browsing?
 
     public float secondsActive = 0;
     public float sectionActive = 0;
@@ -50,8 +57,9 @@ public class App : MonoBehaviour
     }
 
 
-
-
+    /// <summary>
+    /// Called when becoming active - start coroutines and log data
+    /// </summary>
     public void Activate()
     {
         active = true;
@@ -63,6 +71,9 @@ public class App : MonoBehaviour
         StartCoroutine(InputCoroutine);
     }
 
+    /// <summary>
+    /// Called when another app becomes active
+    /// </summary>
     public void Deactivate()
     {
         active = false;
@@ -78,6 +89,9 @@ public class App : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Track keyboard clicks
+    /// </summary>
     private void Update()
     {
         if(active)
@@ -99,6 +113,10 @@ public class App : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Using Unity raw input open source project to track input outside of unity
+    /// </summary>
+    /// <param name="key"></param>
     private void TrackKeyInput(RawKey key)
     {
         keyboardClicks += 1;
@@ -115,6 +133,10 @@ public class App : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Coroutine to determine input (how long since mouse, how long since keyboard, etc.) -> categorize
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator DetermineInput()
     {
         float currentIdleTime = 0;

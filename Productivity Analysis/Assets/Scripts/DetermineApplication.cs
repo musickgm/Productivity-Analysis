@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 using System;
 using System.Text;
 
+/// <summary>
+/// Determines which application is being used
+/// </summary>
 public class DetermineApplication : MonoBehaviour
 {
     [DllImport("user32.dll")]
@@ -19,11 +22,7 @@ public class DetermineApplication : MonoBehaviour
     private string currentApplication;
     private string activeApplication;
 
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
 
     // Update is called once per frame
     void Update()

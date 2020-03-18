@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class to account for different pages for navigation
+/// </summary>
 public class Page : MonoBehaviour
 {
-    public RectTransform parentRect;
-    public Image iconBG;
-    public AnalyticsApp myAnalytics;
+    public RectTransform parentRect;            //Parent rect of the page
+    public Image iconBG;                        //BG color for button - black for active page
+    public AnalyticsApp myAnalytics;            //Analytics to run when page becomes active
 
+    /// <summary>
+    /// Called on button press - activates the apge
+    /// </summary>
     public void ActivatePage()
     {
         iconBG.enabled = true;
@@ -23,6 +29,9 @@ public class Page : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by page manager when a new button/page is selected
+    /// </summary>
     public void DeactivatePage()
     {
         iconBG.enabled = false;

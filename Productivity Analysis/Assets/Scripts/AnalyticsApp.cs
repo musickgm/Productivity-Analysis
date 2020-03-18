@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Analytics (graphs, texts, etc) for a specific app are displayed with this
+/// </summary>
 public class AnalyticsApp : MonoBehaviour
 {
-    public App associatedApp;
-    public RectTransform pieParentInput;
-    public RectTransform pieParentOverall;
+    public App associatedApp;                   //Associated app that has the data needed
+    public RectTransform pieParentInput;        //Transform where the pie chart will be displayed
+    public RectTransform pieParentOverall;      //Transform where the pie chart will be displayed
 
-    public Text enterText;
+    //Specific text boxes for different analytics
+    public Text enterText;                      
     public Text spaceText;
     public Text overallUsageText;
     public Text workText;
     public Text browsingText;
     public Text idleText;
 
+    /// <summary>
+    /// Called when a page is selected - analyze or reanalyze all the data and create charts. 
+    /// </summary>
     public void Analyze()
     {
         CreateInputPie();
@@ -60,6 +67,9 @@ public class AnalyticsApp : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Create the pie chart based on input used in this app
+    /// </summary>
     private void CreateInputPie()
     {
         List<float> inputFractions = new List<float>();
@@ -71,6 +81,9 @@ public class AnalyticsApp : MonoBehaviour
         AnalyticsManager.Instance.MakePie(inputFractions, pieParentInput, AnalyticsManager.Instance.activityColors);
     }
 
+    /// <summary>
+    /// Create a pie chart based on usage of this app compared to overall usage of everything
+    /// </summary>
     private void CreateOverallPie()
     {
         List<float> inputFractions = new List<float>();
@@ -85,6 +98,11 @@ public class AnalyticsApp : MonoBehaviour
         AnalyticsManager.Instance.MakePie(inputFractions, pieParentOverall, colors);
     }
 
+    /// <summary>
+    /// Convert time in seconds to something more readable if over 60 seconds
+    /// </summary>
+    /// <param name="time"></param>time in seconds to be converted
+    /// <returns></returns>
     public string ConvertToAppropriateTime(float time)
     {
         string timeString;

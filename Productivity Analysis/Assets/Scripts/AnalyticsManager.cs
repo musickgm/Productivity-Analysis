@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// All the relevant info for a timeline section
+/// </summary>
 public struct TimelineSection
 {
     public string appName;
@@ -13,12 +16,11 @@ public struct TimelineSection
     public ApplicationType appType;
 }
 
+/// <summary>
+/// Overall analytics manager
+/// </summary>
 public class AnalyticsManager : Singleton<AnalyticsManager>
 {
-    public Text overallWork;
-    public Text overallBrowse;
-    public Text overallLeisure;
-
     //App Timeline
     public RectTransform appTimelineParent;
     public RectTransform appTypeTimelineParent;
@@ -26,14 +28,13 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
     public RectTransform pieParentInput;
     public RectTransform pieParentType;
 
-    public GameObject timelineSectionPrefab;
-    public Image wedgePrefab;
+    public GameObject timelineSectionPrefab;                //Prefab for creating timeline section
+    public Image wedgePrefab;                               //Prefab for creating pie chart
 
     //Colors - work = green; browsing = yellow; leisure = green; misc = grey
     public List<Color> activityColors;
     [HideInInspector]
     public float totalTime = 0;
-
 
     private List<TimelineSection> appTimeline = new List<TimelineSection>();
     private TimeTypes appTimeInput;
@@ -41,16 +42,12 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
 
 
 
-    private void Start()
-    {
-        
-    }
 
+    /// <summary>
+    /// Called when page is selected - run all analytics
+    /// </summary>
     public void RunAnalytics()
     {
-
-
-
         ApplicationManager.Instance.EndCurrentApplication();
         CreateAppTimeline();
         CreateAppTypeTimeline();
@@ -58,14 +55,22 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
         CreateAppTypePieChart();
     }
 
+    /// <summary>
+    /// Called everytime an application loses focus - creates a new timeline section in the list and adjusts total time. 
+    /// </summary>
+    /// <param name="newSection"></param>
     public void AddTimelineSection(TimelineSection newSection)
     {
         appTimeline.Add(newSection);
         totalTime += newSection.secLength;
     }
 
+    /// <summary>
+    /// Create the timeline based on which apps are used
+    /// </summary>
     private void CreateAppTimeline()
     {
+        //Destroy previous timeline
         foreach(Transform child in appTimelineParent.transform)
         {
             Destroy(child.gameObject);
@@ -89,8 +94,12 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
 
     }
 
+    /// <summary>
+    /// Create the timeline based on app types
+    /// </summary>
     public void CreateAppTypeTimeline()
     {
+        //Destroy previous timeline
         foreach (Transform child in appTypeTimelineParent.transform)
         {
             Destroy(child.gameObject);
@@ -116,6 +125,9 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
         }
     }
 
+    /// <summary>
+    /// Create pie chart based on input
+    /// </summary>
     public void CreateInputPieChart()
     {
         appTimeInput.work = 0;
@@ -137,9 +149,11 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
             appTimeInput.leisure += app.timeTypes.leisure;
         }
 
-        float workFraction = appTimeInput.work / totalTime;
-        float browseFraction = appTimeInput.browse / totalTime;
-        float leisureFraction = appTimeInput.leisure / totalTime;
+        float total = appTimeInput.work + appTimeInput.browse + appTimeInput.leisure;
+
+        float workFraction = appTimeInput.work / total;
+        float browseFraction = appTimeInput.browse / total;
+        float leisureFraction = appTimeInput.leisure / total;
 
         List<float> inputFractions = new List<float>();
         inputFractions.Add(workFraction);
@@ -148,17 +162,17 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
 
 
         MakePie(inputFractions, pieParentInput, activityColors);
-
-        overallWork.text = appTimeInput.work.ToString();
-        overallBrowse.text = appTimeInput.browse.ToString();
-        overallLeisure.text = appTimeInput.leisure.ToString();
     }
 
+    /// <summary>
+    /// Create pie chart based on app type
+    /// </summary>
     public void CreateAppTypePieChart()
     {
         appTimeType.work = 0;
         appTimeType.browse = 0;
         appTimeType.leisure = 0;
+        appTimeType.misc = 0;
 
         for (int i = 0; i < ApplicationManager.Instance.usedApplications.Count; i++)
         {
@@ -179,7 +193,7 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
                     appTimeType.misc += appTime;
                     break;
                 default:
-                    appTimeType.misc += appTime;
+                    print("catch 1");
                     break;
             }
         }
@@ -202,15 +216,17 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
                     appTimeType.misc += appTime;
                     break;
                 default:
-                    appTimeType.misc += appTime;
+                    print("catch 2");
                     break;
             }
         }
 
-        float workFraction = appTimeType.work / totalTime;
-        float browseFraction = appTimeType.browse / totalTime;
-        float leisureFraction = appTimeType.leisure / totalTime;
-        float miscFraction = appTimeType.misc / totalTime;
+        float total = appTimeType.work + appTimeType.browse + appTimeType.leisure + appTimeType.misc;
+
+        float workFraction = appTimeType.work / total;
+        float browseFraction = appTimeType.browse / total;
+        float leisureFraction = appTimeType.leisure / total;
+        float miscFraction = appTimeType.misc / total;
 
 
         List<float> typeFractions = new List<float>();
@@ -226,17 +242,21 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
 
     /// <summary>
     ///Pie chart adapted from "Board to bits games youtube series"
+    ///Called by any function desiring to make a pie chart
     /// </summary>
-    /// <param name="values"></param>
-    /// <param name="parent"></param>
+    /// <param name="values"></param> list of values (fractions)
+    /// <param name="parent"></param> parent housing the pie chart
+    /// <param name="pieColors"></param> list of colors to be used in the chart
     public void MakePie(List<float> values, RectTransform parent, List<Color> pieColors)
     {
         float zRotation = 0f;
+        //Destroy previous pie chart
         foreach (Transform child in parent.transform)
         {
             Destroy(child.gameObject);
         }
 
+        //For each fraction, make a wedge, set its parent, color, fill, and rotation.
         for (int i = 0; i < values.Count; i++)
         {
             if(values[i] > 0)
@@ -246,12 +266,18 @@ public class AnalyticsManager : Singleton<AnalyticsManager>
                 newWedge.color = pieColors[i];
                 newWedge.fillAmount = values[i];
                 newWedge.transform.rotation = Quaternion.Euler(new Vector3(0, 0, zRotation));
+                //Increment rotation for next piece
                 zRotation -= newWedge.fillAmount * 360f;
             }
 
         }
     }
 
+    /// <summary>
+    /// Determine correct color based on application type (work, browsing, leisure, misc)
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public Color ActivityTypeColor(ApplicationType type)
     {
         switch(type)
